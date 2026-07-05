@@ -5,16 +5,20 @@ from datetime import datetime, timedelta
 from PIL import Image
 import pandas as pd
 
-# --- 1. GLOBAL INITIALIZATION & HARDCODED KEYS ---
+# --- 1. GLOBAL INITIALIZATION & SECURE KEY SYSTEM ---
 st.set_page_config(
     page_title="ICE CHARTS HUNTER | Premium Financial AI", 
     layout="wide", 
     page_icon="❄️"
 )
 
-# Funguo za API zilizowekwa kiusalama
-GEMINI_KEY = "AQ.Ab8RN6IHHURD5rbRJ7Wfdly2LG5N7FDlu8i4A4p_IZAAHF1bSA"
-FINNHUB_KEY = "d94p8opr01qq8ms5ldtgd94p8opr01qq8ms5ldu0"
+# Mfumo sasa utasoma Keys kwa siri na usalama mkubwa mtandaoni bila kuzuiliwa
+try:
+    GEMINI_KEY = st.secrets["GEMINI_API_KEY"]
+    FINNHUB_KEY = st.secrets["FINNHUB_API_KEY"]
+except Exception as e:
+    st.error("⚠️ Security Token Error: Tafadhali weka API keys zako ndani ya Secrets panel kule Streamlit Dashboard.")
+    st.stop()
 
 if "journal_history" not in st.session_state:
     st.session_state.journal_history = []
@@ -148,7 +152,7 @@ with tab_dash:
                     except Exception as e:
                         st.error(f"Mfumo umeshindwa kusoma chati: {e}")
 
-    # --- POSITION RISK CALCULATOR (HAPA PAMESAFISHWA KIKAMILIFU) ---
+    # --- POSITION RISK CALCULATOR ---
     st.markdown("---")
     st.markdown("### 🧮 Kikokotoo cha Riski na Ukubwa wa Lot Size")
     
@@ -159,6 +163,3 @@ with tab_dash:
     sl_price = st.number_input("Bei ya Kuzuia Hasara (SL)", min_value=0.0, value=1.0720, format="%.5f")
     
     risk_amount = account_balance * (risk_percent / 100.0)
-    price_difference = abs(entry_price - sl_price)
-    
-    # Mahesabu yote yamewekwa kwenye mstari mmoja bila vitalu vya if/else ili kuondoa makosa ya Indentation
